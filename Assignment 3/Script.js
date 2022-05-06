@@ -11,34 +11,42 @@ function reset() {
     playerMoves = 0;
     goals = [];
     goalsCompleted = 0;    
-    addTiles();
+    generateTiles();
 }
 
-function addTiles() {
+function addTileToElement(element, tile) {
+    switch (tile) {
+        case 'W':
+            element.classList.add(Tiles.Wall);
+            break;
+        case "B":
+            element.classList.add(Entities.Block);
+            break;
+        case "P":
+            element.classList.add(Entities.Character);          
+            player = element;
+            break;
+          case "G":
+            element.classList.add(Tiles.Goal);
+            goals.push(element);
+            break;
+        case " ":
+            element.classList.add(Tiles.Space);
+        default:
+            break;
+    }
+}
+
+function generateTiles() {
+
+    document.getElementById("container").style.gridTemplateColumns =  `repeat(${tileMap01.width}, 1fr)`;
+
     for (let y = 0; y < tileMap01.height; y++) {
-        for (let x = 0; x < tileMap01.width; x++) {     
+        for (let x = 0; x < tileMap01.width; x++) {   
+
             var element = document.createElement("div");
             element.setAttribute("id", createID(x, y));
-            switch (tileMap01.mapGrid[y][x].toString()) {
-                case 'W':
-                    element.classList.add(Tiles.Wall);
-                    break;
-                case "B":
-                    element.classList.add(Entities.Block);
-                    break;
-                case "P":
-                    element.classList.add(Entities.Character);          
-                    player = element;
-                    break;
-                  case "G":
-                    element.classList.add(Tiles.Goal);
-                    goals.push(element);
-                    break;
-                case " ":
-                    element.classList.add(Tiles.Space);
-                default:
-                    break;
-            }
+            addTileToElement(element, tileMap01.mapGrid[y][x].toString());
             document.getElementById("container").appendChild(element);
         }
     }
