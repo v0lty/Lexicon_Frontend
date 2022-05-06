@@ -1,0 +1,69 @@
+* {
+  box-sizing: border-box;  
+  padding: 0px;  
+  margin: 0px;
+}
+  
+html, body { 
+  padding: 10px;
+}
+
+#container {
+  display: grid;
+  grid-template-columns: repeat(19, 1fr);
+  width: 728px;
+}
+
+#container div {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  clear:both;
+}
+
+#container div::before {
+  content: "";
+  padding-bottom: 100%;
+  display: block;
+}
+
+.tile-space {
+  background-image: none;
+}
+
+.tile-wall {
+  background-image: url("/images/wall.png");  
+}
+
+.tile-goal {
+  background-image: url("/images/goal.png");
+}
+
+.entity-block {
+  background-image: url("/images/block.png");
+}
+
+.entity-block-goal {
+  background-image: url("/images/block_done.png");
+}
+
+.entity-player {
+  background-image: url("/images/character.png");
+}
+
+#overlay {
+  width: 50px;
+  height: 50px;
+  position: absolute;  
+  z-index: 10;
+  top: 100px;
+  left: 100px;
+  background-color: red;
+  opacity: 0;
+}
+
+#reset {
+  opacity: 0;
+}
+
+
