@@ -38,16 +38,15 @@ function addTileToElement(element, tile) {
 }
 
 function generateTiles() {
-
-    document.getElementById("container").style.gridTemplateColumns =  `repeat(${tileMap01.width}, 1fr)`;
+    var container = document.getElementById("container");
+    container.style.gridTemplateColumns =  `repeat(${tileMap01.width}, 1fr)`;
 
     for (let y = 0; y < tileMap01.height; y++) {
         for (let x = 0; x < tileMap01.width; x++) {   
-
             var element = document.createElement("div");
             element.setAttribute("id", createID(x, y));
             addTileToElement(element, tileMap01.mapGrid[y][x].toString());
-            document.getElementById("container").appendChild(element);
+            container.appendChild(element);
         }
     }
 }
