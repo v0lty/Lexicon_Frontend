@@ -11,7 +11,7 @@ html, body {
 #container {
   display: grid;
   grid-template-columns: repeat(19, 1fr);
-  width: 728px;
+  width: 720px;
 }
 
 #container div {
