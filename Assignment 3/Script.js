@@ -76,7 +76,7 @@ function moveEntity(entity, x, y) {
     }
     
     if (entity.classList.contains(Entities.Character)) {
-
+        
         if (target.classList.contains(Entities.Block)
          || target.classList.contains(Entities.BlockDone)) {
             /*recursive call for target that's blocking the character path*/              
@@ -123,11 +123,9 @@ function handleInputEvent(e) {
 }
 
 document.addEventListener('keydown', function(e) {
-
     if (goalsCompleted == goals.length) {
         return handleInputEvent(e);
     }
-
     switch (e.key) {
         case "ArrowLeft":
             moveEntity(player, -1, 0);
@@ -147,8 +145,7 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-function showInpact(element)
-{
+function showInpact(element) {
     var overlay = document.getElementById("overlay");
     var vp = element.getBoundingClientRect();
     overlay.style.top = `${vp.top}px`;
@@ -158,7 +155,7 @@ function showInpact(element)
     fadeElement(overlay);
 }
 
-function fadeElement(element){
+function fadeElement(element) {
     var increment = 0.2;
     var opacity = 0.8;
     var instance = window.setInterval(function() {
