@@ -112,7 +112,7 @@ function onPlayerMoved(x, y) {
             `Moves: ${playerMoves}. Goals: ${goalsCompleted} / ${goals.length}.`;
     }  
     
-    if (document.getElementById("reset").style.opacity == 0)
+    if (playerMoves == 1)
         document.getElementById("reset").style.opacity = 1;
 }
 
