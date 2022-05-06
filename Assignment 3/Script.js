@@ -104,16 +104,14 @@ function onPlayerMoved(x, y) {
     playerMoves++;
     goalsCompleted = goals.filter(item => item.classList.contains(Entities.BlockDone)).length;    
 
-    if (goalsCompleted == goals.length) {
-        document.getElementById("status").textContent = "Level completed!";
-    }
-    else {
-        document.getElementById("status").textContent = 
-            `Moves: ${playerMoves}. Goals: ${goalsCompleted} / ${goals.length}.`;
-    }  
-    
+    var status = document.getElementById("status");
+
     if (playerMoves == 1)
-        document.getElementById("reset").style.opacity = 1;
+        status.style.opacity = 1;
+
+    status.textContent = (goalsCompleted == goals.length) 
+        ? "Level completed!"
+        : `Moves: ${playerMoves}. Goals: ${goalsCompleted} / ${goals.length}.`;
 }
 
 function handleInputEvent(e) {
