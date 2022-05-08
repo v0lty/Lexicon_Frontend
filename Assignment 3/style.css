@@ -58,5 +58,5 @@ html, body {
 }
 
 #reset {
-  opacity: 0;
+  visibility: hidden;
 }
