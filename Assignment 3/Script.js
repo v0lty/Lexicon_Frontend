@@ -6,46 +6,41 @@ var goalsCompleted = 0;
 function reset() {
     document.getElementById("container").innerHTML = '';
     document.getElementById("status").textContent = "Let's go!";
-    document.getElementById("reset").style.opacity = 0;
+    document.getElementById("reset").style.visibility = "hidden";
     player= null;
     playerMoves = 0;
     goals = [];
     goalsCompleted = 0;    
-    generateTiles();
+    createTiles();
 }
 
-function addTileToElement(element, tile) {
-    switch (tile) {
-        case 'W':
-            element.classList.add(Tiles.Wall);
-            break;
-        case "B":
-            element.classList.add(Entities.Block);
-            break;
-        case "P":
-            element.classList.add(Entities.Character);          
-            player = element;
-            break;
-          case "G":
-            element.classList.add(Tiles.Goal);
-            goals.push(element);
-            break;
-        case " ":
-            element.classList.add(Tiles.Space);
-        default:
-            break;
-    }
-}
-
-function generateTiles() {
+function createTiles() {
     var container = document.getElementById("container");
-    container.style.gridTemplateColumns =  `repeat(${tileMap01.width}, 1fr)`;
-
+    container.style.gridTemplateColumns = `repeat(${tileMap01.width}, 1fr)`;    
     for (let y = 0; y < tileMap01.height; y++) {
         for (let x = 0; x < tileMap01.width; x++) {   
             var element = document.createElement("div");
             element.setAttribute("id", createID(x, y));
-            addTileToElement(element, tileMap01.mapGrid[y][x].toString());
+            switch (tileMap01.mapGrid[y][x].toString()) {
+                case 'W':
+                    element.classList.add(Tiles.Wall);
+                    break;
+                case "B":
+                    element.classList.add(Entities.Block);
+                    break;
+                case "P":
+                    element.classList.add(Entities.Character);          
+                    player = element;
+                    break;
+                  case "G":
+                    element.classList.add(Tiles.Goal);
+                    goals.push(element);
+                    break;
+                case " ":
+                    element.classList.add(Tiles.Space);
+                default:
+                    break;
+            }
             container.appendChild(element);
         }
     }
@@ -63,68 +58,64 @@ function getElementByCoord(x, y) {
     return document.getElementById(createID(x, y));
 }
 
-function isColiding(entity, target) {
-    /*wall is always a collision*/
-    if (target.classList.contains(Tiles.Wall))
-        return true;
-    /*entity is Block or BlockDone and so is target -> collision*/    
-    return ((entity.classList.contains(Entities.Block) || entity.classList.contains(Entities.BlockDone))
-         && (target.classList.contains(Entities.Block) || target.classList.contains(Entities.BlockDone)));
+function isTypeOf(element, ...args) {
+    for (let i = 0; i < args.length; i++) {
+        if (element.classList.contains(args[i]))
+            return true;
+    }
+    return false;
 }
 
-function moveEntity(entity, x, y) {
- 
-    var coords = getCoordsByID(entity.id);  
-    var target = getElementByCoord(coords[0] += x, coords[1] += y);
+function checkCollision(entity, target) {
+    return isTypeOf(target, Tiles.Wall)
+       || (isTypeOf(entity, Entities.Block, Entities.BlockDone) 
+        && isTypeOf(target, Entities.Block, Entities.BlockDone));
+}
 
-    if (isColiding(entity, target)) {
+function moveEntity(entity, x, y) { 
+    var coords = getCoordsByID(entity.id);  
+    var target = getElementByCoord(coords[0] + x, coords[1] + y);
+
+    if (checkCollision(entity, target)) {
         showInpact(target);
         return false;
-    }
-    
-    if (entity.classList.contains(Entities.Character)) {
-        
-        if (target.classList.contains(Entities.Block)
-         || target.classList.contains(Entities.BlockDone)) {
-            /*recursive call for target that's blocking the character path*/              
-            if (!moveEntity(target, x, y)) {
-                return false;
-            }
+    }    
+    if (isTypeOf(entity, Entities.Character)) {      
+        if (isTypeOf(target, Entities.Block, Entities.BlockDone)) {
+            /*recursive call on element in front of player*/              
+            if (!moveEntity(target, x, y)) 
+                return false;            
         }        
         target.classList.remove(...target.classList);
         target.classList.toggle(Entities.Character);
-        onPlayerMoved(coords[0], coords[1]);        
+        onPlayerMoved(target, coords[0], coords[1]);        
     }
     else /*entity == Block || BlockDone*/ {
         target.classList.remove(...target.classList);
         target.classList.toggle(goals.includes(target) ? Entities.BlockDone : Entities.Block);        
     }
-
-    /*entity reached target -> clear & reset*/
     entity.classList.remove(...entity.classList);
     entity.classList.toggle(goals.includes(entity) ? Tiles.Goal : Tiles.Space, true);
     return true;
 }
 
-function onPlayerMoved(x, y) {
-    player = getElementByCoord(x, y);
+function onPlayerMoved(playerElement, x, y) {
+    player = playerElement;
     playerMoves++;
     goalsCompleted = goals.filter(item => item.classList.contains(Entities.BlockDone)).length;    
 
-    var status = document.getElementById("status");
-
-    status.textContent = (goalsCompleted == goals.length) 
+    document.getElementById("status").textContent = (goalsCompleted == goals.length) 
         ? "Level completed!"
         : `Moves: ${playerMoves}. Goals: ${goalsCompleted} / ${goals.length}.`;
 
-    if (playerMoves == 1)
-        document.getElementById("reset").style.opacity = 1;
+    if (playerMoves == 1) 
+        document.getElementById("reset").style.visibility = "visible";
 }
 
 function handleInputEvent(e) {
-    e.preventDefault();  
-    e.stopPropagation(); 
-    return false;
+    e.preventDefault();  // Chrome/Edge
+    e.stopPropagation(); // Opera
+    return false; // IE
 }
 
 document.addEventListener('keydown', function(e) {
@@ -139,12 +130,11 @@ document.addEventListener('keydown', function(e) {
             moveEntity(player, 0, -1);
             return handleInputEvent(e);
         case "ArrowRight": 
-            moveEntity(player, +1, 0);
+            moveEntity(player, 1, 0);
             return handleInputEvent(e);
         case "ArrowDown": 
-            moveEntity(player, 0, +1);
+            moveEntity(player, 0, 1);
             return handleInputEvent(e);
-        case "Space":
         default:
             break;
     }
